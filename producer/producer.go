@@ -9,7 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Comment struct
+// project struct
 type Project struct {
 	Id          string `form:"text" json:"id"`
 	Title       string `form:"text" json:"title"`
@@ -67,14 +67,14 @@ func PushProjectToTopic(topic string, message []byte) error {
 	return nil
 }
 
-// createComment handler
+// create Project handler
 func createProject(c *fiber.Ctx) error {
 
 	// Instantiate new Message struct
-	cmt := new(Project)
+	prj := new(Project)
 
-	//  Parse body into comment struct
-	if err := c.BodyParser(cmt); err != nil {
+	//  Parse body into project struct
+	if err := c.BodyParser(prj); err != nil {
 		log.Println(err)
 		c.Status(400).JSON(&fiber.Map{
 			"success": false,
@@ -83,14 +83,14 @@ func createProject(c *fiber.Ctx) error {
 		return err
 	}
 	// convert body into bytes and send it to kafka
-	cmtInBytes, _ := json.Marshal(cmt)
+	cmtInBytes, _ := json.Marshal(prj)
 	PushProjectToTopic("projects", cmtInBytes)
 
-	// Return Comment in JSON format
+	// Return project in JSON format
 	err := c.JSON(&fiber.Map{
 		"success": true,
 		"message": "Project pushed successfully",
-		"comment": cmt,
+		"project": prj,
 	})
 	if err != nil {
 		c.Status(500).JSON(&fiber.Map{
